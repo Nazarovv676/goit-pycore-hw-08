@@ -1,0 +1,100 @@
+import re
+import command_handler
+
+
+def parse(command: str) -> int:
+    """
+    Parses a command string and executes the corresponding action.
+
+    Args:
+        command (str): The command string input by the user.
+
+    Returns:
+        int:
+            - 1 if the command is "close" or "exit".
+            - 0 if the command is unknown.
+            - 0 for other commands (prints output directly).
+    """
+
+    # Check for exit commands
+    if re.search(r"^close$|^exit$", command, re.IGNORECASE):
+        print("🤖\tGoodbye!")
+        return 1
+
+    # Check for greeting command
+    elif re.search(r"^hello$", command, re.IGNORECASE):
+        print("🤖\tHow can I help you?")
+        return 0
+
+    # Check for "add" command to add a user
+    elif match := re.search(
+        r"^add\s*(?P<name>\w+)?\s*(?P<phone>[\d\+\-\(\)\s]+)?$", command, re.IGNORECASE
+    ):
+        name = match.group("name")
+        phone_number = match.group("phone")
+        res = command_handler.add_user(name, phone_number)
+        print(res)
+        return 0
+
+    # Check for "change" command to modify user details
+    elif match := re.search(
+        r"^change\s*(?P<name>\w+)?\s*(?P<phone>[\d\+\-\(\)\s]+)?$",
+        command,
+        re.IGNORECASE,
+    ):
+        name = match.group("name")
+        phone_number = match.group("phone")
+        res = command_handler.change_user(name, phone_number)
+        print(res)
+        return 0
+
+    # Check for "phone" command to retrieve user's phone number
+    elif match := re.search(r"^phone\s*(?P<name>\w+)?$", command, re.IGNORECASE):
+        name = match.group("name")
+        res = command_handler.get_user_phone(name)
+        print(res)
+        return 0
+
+    # Check for "all" command to list all users
+    elif re.search(r"^all\s*$", command, re.IGNORECASE):
+        res = command_handler.get_all()
+        print(res)
+        return 0
+
+    # Check for "help" command to show available commands
+    elif re.search(r"^help\s*$", command, re.IGNORECASE):
+        res = command_handler.show_help()
+        print(res)
+        return 0
+
+    # Check for "add-birthday" command to add a birthday
+    elif match := re.search(
+        r"^add-birthday\s*(?P<name>\w+)?\s*(?P<birthday>\d{2}\.\d{2}\.\d{4})?$",
+        command,
+        re.IGNORECASE,
+    ):
+        name = match.group("name")
+        birthday = match.group("birthday")
+        res = command_handler.add_birthday(name, birthday)
+        print(res)
+        return 0
+
+    # Check for "show-birthday" command to get user birthday
+    elif match := re.search(
+        r"^show-birthday\s*(?P<name>\w+)?$", command, re.IGNORECASE
+    ):
+        name = match.group("name")
+        res = command_handler.get_birthday(name)
+        print(res)
+        return 0
+
+    # Check for "birthdays" command to get upcoming birthdays
+    elif re.search(r"^birthdays\s*$", command, re.IGNORECASE):
+        res = command_handler.get_upcoming_birthdays()
+        print(res)
+        return 0
+
+    # Handle unknown commands
+    else:
+        print("🤖\tUnknown command. Please try one more time.")
+        return 0
